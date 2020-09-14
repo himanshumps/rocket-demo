@@ -21,7 +21,7 @@ jobs:
     - name: Install Couchbase Dependencies - 2
       run: sudo cp /home/runner/work/rocket-demo/rocket-demo/couchbase.list /etc/apt/sources.list.d/couchbase.list
     - name: Install Couchbase Dependencies - 3
-      run: sudo apt update && sudo apt install -y libcouchbase3 libcouchbase-dev libcouchbase3-tools libcouchbase-dbg libcouchbase3-libev libcouchbase3-libevent libev-libevent-dev libev-dev libevent-dev
+      run: sudo apt update && sudo apt install -y libcouchbase3 libcouchbase-dev libcouchbase3-tools libcouchbase-dbg libcouchbase3-libev libcouchbase3-libevent libev-dev libevent-dev
     - name: Couchbase check
       run: cbc version
     - name: Build
