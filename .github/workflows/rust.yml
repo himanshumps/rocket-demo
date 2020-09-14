@@ -19,7 +19,7 @@ jobs:
     - name: Install Couchbase Dependencies - 1
       run: sudo apt-key add /home/runner/work/rocket-demo/rocket-demo/couchbase.key
     - name: Install Couchbase Dependencies - 2
-      run: sudo echo "deb https://packages.couchbase.com/clients/c/repos/deb/ubuntu1804 bionic bionic/main" > /etc/apt/sources.list.d/couchbase.list
+      run: sudo cp /home/runner/work/rocket-demo/rocket-demo/couchbase.list /etc/apt/sources.list.d/couchbase.list
     - name: Install Couchbase Dependencies - 3
       run: sudo apt update && apt install -y libcouchbase3 libcouchbase-dev libcouchbase3-tools libcouchbase-dbg libcouchbase3-libev libcouchbase3-libevent
     - name: Build
