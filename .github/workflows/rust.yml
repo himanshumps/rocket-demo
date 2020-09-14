@@ -11,9 +11,9 @@ env:
 
 jobs:
   build:
-
+    env:
+      RUST_BACKTRACE: 1 
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Build
