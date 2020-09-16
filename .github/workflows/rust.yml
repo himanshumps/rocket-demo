@@ -1,0 +1,30 @@
+name: Rust
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    env:
+      RUST_BACKTRACE: 1 
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install Couchbase Dependencies - 1
+      run: sudo apt-key add /home/runner/work/rocket-demo/rocket-demo/couchbase.key
+    - name: Install Couchbase Dependencies - 2
+      run: sudo cp /home/runner/work/rocket-demo/rocket-demo/couchbase.list /etc/apt/sources.list.d/couchbase.list
+    - name: Install Couchbase Dependencies - 3
+      run: sudo apt update && sudo apt install -y libcouchbase3 libcouchbase-dev libcouchbase3-tools libcouchbase-dbg libcouchbase3-libev libcouchbase3-libevent libev-dev libevent-dev
+    - name: Couchbase check
+      run: cbc version
+    - name: Build
+      run: cargo build --verbose
+    - name: Run tests
+      run: cargo test --verbose
