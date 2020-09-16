@@ -1,36 +1,30 @@
-#![feature(proc_macro_hygiene, decl_macro)]
-
-#[macro_use]
-extern crate rocket;
-
-use couchbase::{Cluster, QueryOptions};
-use futures::executor::block_on;
-use futures::stream::StreamExt;
-use rocket::State;
-use rocket_contrib::json::Json;
-use serde_json::Value;
+use couchbase::*;
+use actix_web::{
+    error, middleware, web, App, Error, HttpRequest, HttpResponse, HttpServer,
+};
 
 struct Couchbase {
     cluster: Cluster,
+    bucket: Bucket,
+    collection: Collection,
 }
 
-#[get("/airlines")]
-fn index(db: State<Couchbase>) -> Json<Vec<Value>> {
-    let mut result = block_on(db.cluster.query(
-        "select `travel-sample`.* from `travel-sample` where type = 'airline' limit 10",
-        QueryOptions::default(),
-    ))
-    .expect("Do Something with Error");
-
-    let airlines = result.rows().map(|r| r.unwrap()).collect::<Vec<Value>>();
-    Json(block_on(airlines))
+#[get("/getDetails/{id}")]
+async fn index(web::Path((id)): web::Path<(String)>, couchbase: web::Data<Collection>) -> HttpResponse {
+    couchbase.collection.get(id, GetOptions::default()).await {
+        Ok(result) => Ok(HttpResponse::Ok().body(result),
+        Err(e) => Ok(HttpResponse::InternalServerError().content_type("text/plain").body(e)))
+    };
 }
 
-fn main() {
-    rocket::ignite()
-        .manage(Couchbase {
-            cluster: Cluster::connect("127.0.0.1", "Administrator", "password"),
-        })
-        .mount("/", routes![index])
-        .launch();
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    env_logger::init();
+    // Use the default collection (needs to be used for all server 6.5 and earlier)
+    let collection = Cluster::connect("couchbase://127.0.0.1", "Administrator", "password").bucket("travel-sample").default_collection();
+   
+    HttpServer::new(|| App::new().app_data(collection).service(index))
+        .bind("127.0.0.1:8080")?
+        .run()
+        .await
 }
