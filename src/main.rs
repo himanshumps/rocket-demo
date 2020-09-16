@@ -1,18 +1,10 @@
 use couchbase::*;
-use actix_web::{
-    error, middleware, web, App, Error, HttpRequest, HttpResponse, HttpServer,
-};
-
-struct Couchbase {
-    cluster: Cluster,
-    bucket: Bucket,
-    collection: Collection,
-}
+use actix_web::{get, web, App, HttpResponse, HttpServer};
 
 #[get("/getDetails/{id}")]
-async fn index(web::Path((id)): web::Path<(String)>, couchbase: web::Data<Collection>) -> HttpResponse {
-    couchbase.collection.get(id, GetOptions::default()).await {
-        Ok(result) => Ok(HttpResponse::Ok().body(result),
+async fn index(web::Path(id): web::Path<String>, collection: web::Data<Collection>) -> HttpResponse {
+    collection.get(id, GetOptions::default()).await {
+        Ok(mut result) => Ok(HttpResponse::Ok().body(result),
         Err(e) => Ok(HttpResponse::InternalServerError().content_type("text/plain").body(e)))
     };
 }
