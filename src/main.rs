@@ -4,8 +4,8 @@ use actix_web::{get, web, App, HttpResponse, HttpServer};
 #[get("/getDetails/{id}")]
 async fn index(web::Path(id): web::Path<String>, collection: web::Data<Collection>) -> HttpResponse {
     collection.get(id, GetOptions::default()).await {
-        Ok(mut result) => Ok(HttpResponse::Ok().body(result),
-        Err(e) => Ok(HttpResponse::InternalServerError().content_type("text/plain").body(e)))
+        Ok(mut result) => Ok(HttpResponse::Ok().body(result)
+        Err(e) => Ok(HttpResponse::InternalServerError().content_type("text/plain").body(e))),
     };
 }
 
