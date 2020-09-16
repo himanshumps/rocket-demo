@@ -5,7 +5,7 @@ struct PaceCouchbase {
     collection: Collection,
 }
 #[get("/getDetails/{id}")]
-async fn index(web::Path(id): web::Path<String>, paceCouchbase: web::Data<PaceCouchbase>) {
+async fn index(web::Path(id): web::Path<String>, paceCouchbase: web::Data<PaceCouchbase>) -> HttpResponse {
     paceCouchbase.collection.get(id, GetOptions::default()).await {
         Ok(mut result) => Ok(HttpResponse::Ok().body(result.content)
         Err(e) => Ok(HttpResponse::InternalServerError().content_type("text/plain").body(e))),
