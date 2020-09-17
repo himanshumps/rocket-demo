@@ -22,8 +22,6 @@ jobs:
       run: sudo cp /home/runner/work/rocket-demo/rocket-demo/couchbase.list /etc/apt/sources.list.d/couchbase.list
     - name: Install Couchbase Dependencies - 3
       run: sudo apt update && sudo apt install -y libcouchbase3 libcouchbase-dev libcouchbase3-tools libcouchbase-dbg libcouchbase3-libev libcouchbase3-libevent libev-dev libevent-dev
-    - name: Couchbase check
-      run: cbc version
     - name: Install latest rust toolchain
       uses: actions-rs/toolchain@v1
       with:
@@ -35,6 +33,8 @@ jobs:
       with:
         tag_name: "0.1.0"
         delete_release: true
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
