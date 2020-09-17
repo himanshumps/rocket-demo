@@ -24,17 +24,16 @@ jobs:
       run: sudo apt update && sudo apt install -y libcouchbase3 libcouchbase-dev libcouchbase3-tools libcouchbase-dbg libcouchbase3-libev libcouchbase3-libevent libev-dev libevent-dev
     - name: Couchbase check
       run: cbc version
-    - name: Install latest rust toolchain
+	- name: Install latest rust toolchain
       uses: actions-rs/toolchain@v1
       with:
         toolchain: stable
     - name: Build
       run: cargo build --all --release && strip target/release/actix_demo && mv target/release/actix_demo target/release/actix_demo_amd64
-    - name: Run tests
-      run: cargo test --verbose
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
+        tag_name: "0.1.0"
         files: target/release/actix_demo_amd64
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
