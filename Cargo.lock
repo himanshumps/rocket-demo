@@ -36,22 +36,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "actix-demo"
-version = "0.1.0"
-dependencies = [
- "actix-rt",
- "actix-service",
- "actix-web",
- "couchbase",
- "env_logger",
- "futures",
- "java-properties",
- "json",
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "actix-http"
 version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -275,6 +259,22 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "actix_demo"
+version = "0.1.0"
+dependencies = [
+ "actix-rt",
+ "actix-service",
+ "actix-web",
+ "couchbase",
+ "env_logger",
+ "futures",
+ "java-properties",
+ "json",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
