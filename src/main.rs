@@ -27,12 +27,12 @@ async fn index(
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init();
-    let file_name = "couchbase.properties";
 
-    let mut file = File::open(&file_name)?;
-    let couchbase_map = read(BufReader::new(file)).unwrap();
-
-    HttpServer::new(|| {
+    HttpServer::new(move || {
+        let file_name = "couchbase.properties";
+        let file = File::open(&file_name)?;
+        let couchbase_map = read(BufReader::new(file)).unwrap();
+    
         App::new()
             .data(PaceCouchbase {
                 collection: Cluster::connect(
