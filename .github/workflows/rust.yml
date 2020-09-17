@@ -30,11 +30,10 @@ jobs:
         toolchain: stable
     - name: Build
       run: cargo build --all --release && strip target/release/actix_demo && mv target/release/actix_demo target/release/actix_demo_amd64
-    - name: Run tests
-      run: cargo test --verbose
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
+        tag_name: "0.1.0"
         files: target/release/actix_demo_amd64
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
