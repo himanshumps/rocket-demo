@@ -30,17 +30,17 @@ async fn main() -> std::io::Result<()> {
     let file_name = "couchbase.properties";
 
     let mut file = File::open(&file_name)?;
-    let couchbase_map = read(BufReader::new(file))?;
+    let couchbase_map = read(BufReader::new(file)).unwrap();
 
     HttpServer::new(|| {
         App::new()
             .data(PaceCouchbase {
                 collection: Cluster::connect(
-                    couchbase_map.get(&"connection_string").unwrap(),
-                    couchbase_map.get(&"username").unwrap(),
-                    couchbase_map.get(&"password").unwrap(),
+                    couchbase_map.get::<str>(&"connection_string".to_string()).unwrap(),
+                    couchbase_mapget::<str>(&"username".to_string()).unwrap(),
+                    couchbase_mapget::<str>(&"password".to_string()).unwrap(),
                 )
-                .bucket(couchbase_map.get(&"bucket").unwrap())
+                .bucket(couchbase_mapget::<str>((&"bucket".to_string()).unwrap())
                 .default_collection(),
             })
             .service(index)
