@@ -7,9 +7,9 @@ pub struct PaceCouchbase {
 #[get("/getDetails/{id}")]
 async fn index(
     web::Path(id): web::Path<String>,
-    paceCouchbase: web::Data<PaceCouchbase>,
+    pace_couchbase: web::Data<PaceCouchbase>,
 ) -> Result<HttpResponse, Error> {
-    let results = match paceCouchbase
+    let results = match pace_couchbase
         .collection
         .get(id, GetOptions::default())
         .await
