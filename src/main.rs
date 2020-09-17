@@ -1,5 +1,8 @@
-use actix_web::{get, web, App, HttpResponse, HttpServer, Result, Error,};
+use actix_web::{get, web, App, Error, HttpResponse, HttpServer, Result};
 use couchbase::*;
+use java_properties::read;
+use std::fs::File;
+use std::io::BufReader;
 
 pub struct PaceCouchbase {
     collection: Collection,
@@ -24,14 +27,21 @@ async fn index(
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init();
-    // Use the default collection (needs to be used for all server 6.5 and earlier)
+    let file_name = "couchbase.properties";
+
+    let mut file = File::open(&file_name)?;
+    let couchbase_map = read(BufReader::new(file))?;
 
     HttpServer::new(|| {
         App::new()
             .data(PaceCouchbase {
-                collection: Cluster::connect("couchbase://127.0.0.1", "Administrator", "password")
-                    .bucket("travel-sample")
-                    .default_collection(),
+                collection: Cluster::connect(
+                    couchbase_map.get("connectionString"),
+                    couchbase_map.get("username"),
+                    couchbase_map.get("password"),
+                )
+                .bucket(couchbase_map.get("bucket"))
+                .default_collection(),
             })
             .service(index)
     })
