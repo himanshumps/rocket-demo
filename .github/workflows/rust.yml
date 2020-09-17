@@ -30,10 +30,15 @@ jobs:
         toolchain: stable
     - name: Build
       run: cargo build --all --release && strip target/release/actix_demo && mv target/release/actix_demo target/release/actix_demo_amd64
+    - name: Delete tag and release
+      uses: dev-drprasad/delete-tag-and-release@v0.1.2
+      with:
+        tag_name: "0.1.0"
+        delete_release: true
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: "0.2.0"
+        tag_name: "0.1.0"
         prerelease: true
         draft: true
         files: target/release/actix_demo_amd64
