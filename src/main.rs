@@ -37,10 +37,10 @@ async fn main() -> std::io::Result<()> {
             .data(PaceCouchbase {
                 collection: Cluster::connect(
                     couchbase_map.get::<str>(&"connection_string".to_string()).unwrap(),
-                    couchbase_mapget::<str>(&"username".to_string()).unwrap(),
-                    couchbase_mapget::<str>(&"password".to_string()).unwrap(),
+                    couchbase_map.get::<str>(&"username".to_string()).unwrap(),
+                    couchbase_map.get::<str>(&"password".to_string()).unwrap(),
                 )
-                .bucket(couchbase_mapget::<str>((&"bucket".to_string()).unwrap())
+                .bucket(couchbase_map.get::<str>(&"bucket".to_string()).unwrap())
                 .default_collection(),
             })
             .service(index)
