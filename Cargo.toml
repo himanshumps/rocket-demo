@@ -1,5 +1,7 @@
 [package]
 name = "actix_demo"
+authors = ["Himanshu Gupta<himanshu.mps@gmail.com>"]
+edition = "2018"
 
 [dependencies]
 couchbase = "1.0.0-alpha.4"
