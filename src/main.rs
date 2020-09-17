@@ -1,4 +1,4 @@
-use actix_web::{get, web, App, HttpResponse, HttpServer};
+use actix_web::{get, web, App, HttpResponse, HttpServer, Result, Error,};
 use couchbase::*;
 
 pub struct PaceCouchbase {
