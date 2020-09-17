@@ -36,11 +36,11 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .data(PaceCouchbase {
                 collection: Cluster::connect(
-                    couchbase_map.get("connectionString"),
-                    couchbase_map.get("username"),
-                    couchbase_map.get("password"),
+                    couchbase_map.get(&"connection_string").unwrap(),
+                    couchbase_map.get(&"username").unwrap(),
+                    couchbase_map.get(&"password").unwrap(),
                 )
-                .bucket(couchbase_map.get("bucket"))
+                .bucket(couchbase_map.get(&"bucket").unwrap())
                 .default_collection(),
             })
             .service(index)
