@@ -40,7 +40,6 @@ jobs:
       with:
         tag_name: "0.1.0"
         prerelease: true
-        draft: true
         files: target/release/actix_demo_amd64
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
