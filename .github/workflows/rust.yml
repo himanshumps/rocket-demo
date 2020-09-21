@@ -13,7 +13,7 @@ jobs:
   build:
     env:
       RUST_BACKTRACE: 1 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v2
     - name: Install Couchbase Dependencies - 1
