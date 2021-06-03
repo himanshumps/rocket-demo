@@ -11,6 +11,8 @@ jobs:
     env:
       RUST_BACKTRACE: 1 
       PKG_CONFIG_ALLOW_CROSS: 1
+      CXX: /usr/bin/clang++
+      CC: /usr/bin/clang
     runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v2
@@ -21,15 +23,15 @@ jobs:
     - name: Install Couchbase Dependencies - 3
       run: sudo apt update && sudo apt install -y libcouchbase3 libcouchbase-dev libcouchbase3-tools libcouchbase-dbg libcouchbase3-libev libcouchbase3-libevent libev-dev libevent-dev
     - name: Install bindgen
-      run: sudo apt install llvm-dev libclang-dev clang musl-tools libssl-dev pkg-config
+      run: sudo apt install llvm-dev libclang-dev clang musl-tools libssl-dev pkg-config build-essential
     - name: Install latest rust toolchain
       uses: actions-rs/toolchain@v1
       with:
         toolchain: stable
     - name: Install target
       run: rustup target add x86_64-unknown-linux-musl
-    - name: Link g++
-      run: sudo ln -s /bin/g++ /bin/musl-g++
+    #- name: clang changes
+    #  run: sudo update-alternatives --config c++
     - name: Build
       run: cargo build --all --release --target x86_64-unknown-linux-musl && strip target/release/actix_demo && mv target/release/actix_demo target/release/actix_demo_amd64
       env:
