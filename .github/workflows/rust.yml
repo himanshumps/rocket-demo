@@ -28,6 +28,8 @@ jobs:
         toolchain: stable
     - name: Install target
       run: rustup target add x86_64-unknown-linux-musl
+    - name: Link g++
+      run: sudo ln -s /bin/g++ /bin/musl-g++
     - name: Build
       run: cargo build --all --release --target x86_64-unknown-linux-musl && strip target/release/actix_demo && mv target/release/actix_demo target/release/actix_demo_amd64
       env:
