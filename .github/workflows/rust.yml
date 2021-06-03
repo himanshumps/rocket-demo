@@ -33,7 +33,7 @@ jobs:
     #- name: clang changes
     #  run: sudo update-alternatives --config c++
     - name: Build
-      run: cargo build --all --release --target x86_64-unknown-linux-musl && strip target/release/actix_demo && mv target/release/actix_demo target/release/actix_demo_amd64
+      run: cargo build --all --release --target x86_64-unknown-linux-musl && ls -altr target/release/ && strip target/release/actix_demo && mv target/release/actix_demo target/release/actix_demo_amd64
       env:
         PKG_CONFIG_ALLOW_CROSS: 1
     - name: Delete tag and release
