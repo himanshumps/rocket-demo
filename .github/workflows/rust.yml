@@ -13,8 +13,8 @@ jobs:
       PKG_CONFIG_ALLOW_CROSS: 1
       #CXX: /usr/bin/musl-g++
       #CC: /usr/bin/clang
-      CC: x86_64-linux-musl-gcc 
-      CXX: x86_64-linux-musl-g++
+      CC: musl-gcc 
+      CXX: musl-g++
       #RUSTFLAGS: -Clinker=musl-gcc
     runs-on: ubuntu-16.04
     steps:
@@ -26,7 +26,7 @@ jobs:
     - name: Install Couchbase Dependencies - 3
       run: sudo apt update && sudo apt install -y libcouchbase3 libcouchbase-dev libcouchbase3-tools libcouchbase-dbg libcouchbase3-libev libcouchbase3-libevent libev-dev libevent-dev
     - name: Install bindgen
-      run: sudo apt install llvm-dev libclang-dev clang musl-tools libssl-dev pkg-config build-essential
+      run: sudo apt install llvm-dev libclang-dev clang musl-tools libssl-dev pkg-config build-essential musl-gcc musl-g++
     - name: Install latest rust toolchain
       uses: actions-rs/toolchain@v1
       with:
