@@ -29,7 +29,7 @@ jobs:
     - name: Install bindgen
       run: sudo apt install llvm-dev libclang-dev clang musl-tools libssl-dev pkg-config build-essential musl-dev linux-libc-dev
     - name: Build-musl
-      uses: gmiam/rust-musl-action@master
+      uses: himanshumps/rust-musl-action@master
       with:
         args: cargo build --target $BUILD_TARGET --release
     - name: Cleaning
