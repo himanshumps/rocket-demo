@@ -25,6 +25,8 @@ jobs:
       uses: actions-rs/toolchain@v1
       with:
         toolchain: stable
+    - name: Install target
+      run: rustup target add x86_64-unknown-linux-musl
     - name: Build
       run: cargo build --all --release --target x86_64-unknown-linux-musl && strip target/release/actix_demo && mv target/release/actix_demo target/release/actix_demo_amd64
     - name: Delete tag and release
