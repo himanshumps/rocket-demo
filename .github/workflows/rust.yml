@@ -19,7 +19,7 @@ jobs:
       with:
         args: cargo +stable build --release
     - name: Cleaning
-      run: ls -altr target/release/a* && strip target/release/actix_demo && mv target/release/actix_demo target/release/actix_demo_amd64
+      run: ls -altr target/release/a* && mv target/release/actix_demo target/release/actix_demo_amd64
     - name: Delete tag and release
       uses: dev-drprasad/delete-tag-and-release@v0.1.2
       with:
