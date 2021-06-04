@@ -37,8 +37,7 @@ async fn main() -> std::io::Result<()> {
             couchbase_map.get::<str>(&"username".to_string()).unwrap(),
             couchbase_map.get::<str>(&"password".to_string()).unwrap(),
         )
-        .bucket(couchbase_map.get::<str>(&"bucket".to_string()).unwrap())
-        .unwrap();
+        .bucket(couchbase_map.get::<str>(&"bucket".to_string()).unwrap());
         //let arc_bucket = Arc::new(tmp_bucket);
         App::new().data(tmp_bucket.clone()).service(index)
     })
