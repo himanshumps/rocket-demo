@@ -14,7 +14,7 @@ actix-service = "1.0.0"
 json = "0.12"
 env_logger = "0.7"
 java-properties = "1.2.0"
-openssl = { version = "=0.10.33", features = ["vendored"] }
+openssl = "0.10.33" 
 
 [dev-dependencies]
 actix-rt = "1"
