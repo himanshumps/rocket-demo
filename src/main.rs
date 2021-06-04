@@ -31,7 +31,8 @@ async fn main() -> std::io::Result<()> {
     );
     let arc_cluster = Arc::new(cb_cluster);
     let cb_bucket = arc_cluster.bucket(env::var("COUCHBASE_BUCKET").unwrap());
-    HttpServer::new(move || App::new().data(Arc::new(cb_bucket).clone()).service(index))
+    let arc_bucket = Arc::new(cb_bucket);
+    HttpServer::new(move || App::new().data(arc_bucket.clone()).service(index))
         .bind("0.0.0.0:8082")?
         .run()
         .await
