@@ -33,7 +33,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .data(arc_bucket.clone())
-            .wrap(middleware::Logger::default())
+            .wrap(Logger::default())
             .service(index)
     })
     .bind("0.0.0.0:8082")?
