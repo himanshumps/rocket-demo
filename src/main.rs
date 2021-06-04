@@ -5,7 +5,7 @@ use std::io::BufReader;
 use std::sync::Arc;
 
 pub struct PaceCouchbase {
-    collection: Collection,
+    collection: Arc<couchbase::Collection>,
 }
 #[get("/getDetails/{id}")]
 async fn index(
