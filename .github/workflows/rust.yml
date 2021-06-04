@@ -18,8 +18,6 @@ jobs:
     - uses: himanshumps/rust-musl-action@master
       with:
         args: cargo +stable build --release
-    - name: Cleaning
-      run: ls -altr target/release/a* && mv target/release/actix_demo target/release/actix_demo_amd64
     - name: Delete tag and release
       uses: dev-drprasad/delete-tag-and-release@v0.1.2
       with:
@@ -30,8 +28,9 @@ jobs:
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
+        files: target/release/actix_demo
         tag_name: "0.1.0"
         prerelease: true
-        files: target/release/actix_demo_amd64
+        
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
