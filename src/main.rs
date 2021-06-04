@@ -2,9 +2,9 @@ use actix_web::{get, web, App, Error, HttpResponse, HttpServer, Result};
 use couchbase::*;
 use std::env;
 use std::io::BufReader;
-
+use std::sync::Arc;
 pub struct PaceCouchbase {
-    collection: Collection,
+    collection: Arc<couchbase::Collection>,
 }
 #[get("/getDetails/{id}")]
 async fn index(
@@ -12,6 +12,9 @@ async fn index(
     pace_couchbase: web::Data<PaceCouchbase>,
 ) -> Result<HttpResponse, Error> {
     let results = match pace_couchbase
+        .get_ref()
+        .to_owned()
+        .clone()
         .collection
         .get(id, GetOptions::default())
         .await
@@ -19,29 +22,29 @@ async fn index(
         Ok(r) => HttpResponse::Ok().body(format!("{:?}", r)),
         Err(e) => HttpResponse::InternalServerError().body(format!("{}", e)),
     };
-
     Ok(results)
 }
-
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init();
-
+    let cb_cluster = Cluster::connect(
+        env::var("COUCHBASE_STRING").unwrap(),
+        env::var("COUCHBASE_USERNAME").unwrap(),
+        env::var("COUCHBASE_PASSWORD").unwrap(),
+    );
+    let arc_cluster = Arc::new(cb_cluster);
+    let cb_bucket = arc_cluster.bucket(env::var("COUCHBASE_BUCKET").unwrap());
+    let arc_bucket = Arc::new(cb_bucket);
+    let cb_collection = arc_bucket.default_collection();
+    let arc_collection = Arc::new(cb_collection);
     HttpServer::new(move || {
-        let couchbase_default_collection = Cluster::connect(
-            env::var("COUCHBASE_STRING").unwrap(),
-            env::var("COUCHBASE_USERNAME").unwrap(),
-            env::var("COUCHBASE_PASSWORD}").unwrap(),
-        )
-        .bucket(env::var("COUCHBASE_BUCKET").unwrap())
-        .default_collection();
         App::new()
             .data(PaceCouchbase {
-                collection: couchbase_default_collection,
+                collection: arc_collection.clone(),
             })
             .service(index)
     })
-    .bind("0.0.0.0:8081")?
+    .bind("0.0.0.0:8082")?
     .run()
     .await
 }
