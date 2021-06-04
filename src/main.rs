@@ -25,21 +25,20 @@ async fn index(
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init();
-
+    let file_name = "couchbase.properties";
+    let file = File::open(&file_name).unwrap();
+    let couchbase_map = read(BufReader::new(file)).unwrap();
+    let tmp_bucket = Cluster::connect(
+        couchbase_map
+            .get::<str>(&"connection_string".to_string())
+            .unwrap(),
+        couchbase_map.get::<str>(&"username".to_string()).unwrap(),
+        couchbase_map.get::<str>(&"password".to_string()).unwrap(),
+    )
+    .bucket(couchbase_map.get::<str>(&"bucket".to_string()).unwrap());
     HttpServer::new(move || {
-        let file_name = "couchbase.properties";
-        let file = File::open(&file_name).unwrap();
-        let couchbase_map = read(BufReader::new(file)).unwrap();
-        let tmp_bucket = Cluster::connect(
-            couchbase_map
-                .get::<str>(&"connection_string".to_string())
-                .unwrap(),
-            couchbase_map.get::<str>(&"username".to_string()).unwrap(),
-            couchbase_map.get::<str>(&"password".to_string()).unwrap(),
-        )
-        .bucket(couchbase_map.get::<str>(&"bucket".to_string()).unwrap());
         //let arc_bucket = Arc::new(tmp_bucket);
-        App::new().data(&tmp_bucket).service(index)
+        App::new().data(tmp_bucket.clone()).service(index)
     })
     .bind("0.0.0.0:8080")?
     .run()
