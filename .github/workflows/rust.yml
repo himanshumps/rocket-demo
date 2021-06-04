@@ -13,8 +13,7 @@ jobs:
     runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v2
-    - name: Build-musl
-      uses: himanshumps/rust-musl-action@master
+    - uses: himanshumps/rust-musl-action@master
       with:
         args: cargo build --release
     - name: Cleaning
