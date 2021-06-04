@@ -1,36 +1,42 @@
-#![feature(proc_macro_hygiene, decl_macro)]
+use actix_web::{get, middleware::Logger, web, App, Error, HttpResponse, HttpServer, Result};
+use couchbase::{Bucket, Cluster, GetOptions};
+use std::env;
+use std::sync::Arc;
 
-#[macro_use]
-extern crate rocket;
-
-use couchbase::{Cluster, QueryOptions};
-use futures::executor::block_on;
-use futures::stream::StreamExt;
-use rocket::State;
-use rocket_contrib::json::Json;
-use serde_json::Value;
-
-struct Couchbase {
-    cluster: Cluster,
+#[get("/getDetails/{id}")]
+async fn index(
+    web::Path(id): web::Path<String>,
+    bucket: web::Data<Arc<Bucket>>,
+) -> Result<HttpResponse, Error> {
+    let results = match bucket
+        .as_ref()
+        .default_collection()
+        .get(id, GetOptions::default())
+        .await
+    {
+        Ok(r) => HttpResponse::Ok().body(format!("{:?}", r)),
+        Err(e) => HttpResponse::InternalServerError().body(format!("{}", e)),
+    };
+    Ok(results)
 }
-
-#[get("/airlines")]
-fn index(db: State<Couchbase>) -> Json<Vec<Value>> {
-    let mut result = block_on(db.cluster.query(
-        "select `travel-sample`.* from `travel-sample` where type = 'airline' limit 10",
-        QueryOptions::default(),
-    ))
-    .expect("Do Something with Error");
-
-    let airlines = result.rows().map(|r| r.unwrap()).collect::<Vec<Value>>();
-    Json(block_on(airlines))
-}
-
-fn main() {
-    rocket::ignite()
-        .manage(Couchbase {
-            cluster: Cluster::connect("127.0.0.1", "Administrator", "password"),
-        })
-        .mount("/", routes![index])
-        .launch();
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
+    let cb_cluster = Cluster::connect(
+        env::var("COUCHBASE_STRING").unwrap(),
+        env::var("COUCHBASE_USERNAME").unwrap(),
+        env::var("COUCHBASE_PASSWORD").unwrap(),
+    );
+    let arc_cluster = Arc::new(cb_cluster);
+    let cb_bucket = arc_cluster.bucket(env::var("COUCHBASE_BUCKET").unwrap());
+    let arc_bucket = Arc::new(cb_bucket);
+    HttpServer::new(move || {
+        App::new()
+            .data(arc_bucket.clone())
+            .wrap(middleware::Logger::default())
+            .service(index)
+    })
+    .bind("0.0.0.0:8082")?
+    .run()
+    .await
 }
