@@ -3,6 +3,7 @@ use couchbase::*;
 use java_properties::read;
 use std::fs::File;
 use std::io::BufReader;
+use std::sync::{Arc, Mutex};
 
 pub struct PaceCouchbase {
     collection: Collection,
@@ -39,9 +40,10 @@ async fn main() -> std::io::Result<()> {
         )
         .bucket(couchbase_map.get::<str>(&"bucket".to_string()).unwrap())
         .default_collection();
+        let arc_bucket = Arc::new(couchbase_default_collection);
         App::new()
             .data(PaceCouchbase {
-                collection: couchbase_default_collection,
+                collection: arc_bucket.clone(),
             })
             .service(index)
     })
