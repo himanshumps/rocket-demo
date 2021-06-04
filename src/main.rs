@@ -39,7 +39,7 @@ async fn main() -> std::io::Result<()> {
         )
         .bucket(couchbase_map.get::<str>(&"bucket".to_string()).unwrap());
         //let arc_bucket = Arc::new(tmp_bucket);
-        App::new().data(tmp_bucket.clone()).service(index)
+        App::new().data(&tmp_bucket).service(index)
     })
     .bind("0.0.0.0:8080")?
     .run()
