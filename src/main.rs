@@ -8,9 +8,13 @@ use std::sync::Arc;
 #[get("/getDetails/{id}")]
 async fn index(
     web::Path(id): web::Path<String>,
-    pace_collection: web::Data<Arc<Collection>>,
+    pace_bucket: web::Data<Arc<Bucket>>,
 ) -> Result<HttpResponse, Error> {
-    let results = match pace_collection.get(id, GetOptions::default()).await {
+    let results = match pace_bucket
+        .default_collection()
+        .get(id, GetOptions::default())
+        .await
+    {
         Ok(r) => HttpResponse::Ok().body(format!("{:?}", r)),
         Err(e) => HttpResponse::InternalServerError().body(format!("{}", e)),
     };
@@ -26,17 +30,16 @@ async fn main() -> std::io::Result<()> {
         let file_name = "couchbase.properties";
         let file = File::open(&file_name).unwrap();
         let couchbase_map = read(BufReader::new(file)).unwrap();
-        let tmp_collection = Cluster::connect(
+        let tmp_bucket = Cluster::connect(
             couchbase_map
                 .get::<str>(&"connection_string".to_string())
                 .unwrap(),
             couchbase_map.get::<str>(&"username".to_string()).unwrap(),
             couchbase_map.get::<str>(&"password".to_string()).unwrap(),
         )
-        .bucket(couchbase_map.get::<str>(&"bucket".to_string()).unwrap())
-        .default_collection();
-        let arc_collection = Arc::new(collection);
-        App::new().data(arc_collection.clone()).service(index)
+        .bucket(couchbase_map.get::<str>(&"bucket".to_string()).unwrap());
+        let arc_bucket = Arc::new(tmp_bucket);
+        App::new().data(arc_bucket.clone()).service(index)
     })
     .bind("127.0.0.1:8080")?
     .run()
