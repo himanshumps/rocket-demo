@@ -8,7 +8,7 @@ async fn index(
     web::Path(id): web::Path<String>,
     bucket: web::Data<Arc<Bucket>>,
 ) -> Result<HttpResponse, Error> {
-    let results = bucket
+    let results = match bucket
         .as_ref()
         .default_collection()
         .get(id, GetOptions::default())
