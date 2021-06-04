@@ -3,12 +3,12 @@ use couchbase::*;
 use java_properties::read;
 use std::fs::File;
 use std::io::BufReader;
-//use std::sync::Arc;
+use std::sync::Arc;
 
 #[get("/getDetails/{id}")]
 async fn index(
     web::Path(id): web::Path<String>,
-    pace_bucket: web::Data<Bucket>,
+    pace_bucket: web::Data<Arc<Bucket>>,
 ) -> Result<HttpResponse, Error> {
     let results = match pace_bucket
         .default_collection()
@@ -25,22 +25,23 @@ async fn index(
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init();
-    let file_name = "couchbase.properties";
-    let file = File::open(&file_name).unwrap();
-    let couchbase_map = read(BufReader::new(file)).unwrap();
-    let tmp_bucket = Cluster::connect(
-        couchbase_map
-            .get::<str>(&"connection_string".to_string())
-            .unwrap(),
-        couchbase_map.get::<str>(&"username".to_string()).unwrap(),
-        couchbase_map.get::<str>(&"password".to_string()).unwrap(),
-    )
-    .bucket(couchbase_map.get::<str>(&"bucket".to_string()).unwrap());
+
     HttpServer::new(move || {
-        //let arc_bucket = Arc::new(tmp_bucket);
-        App::new().data(tmp_bucket.clone()).service(index)
+        let file_name = "couchbase.properties";
+        let file = File::open(&file_name).unwrap();
+        let couchbase_map = read(BufReader::new(file)).unwrap();
+        let tmp_bucket = Cluster::connect(
+            couchbase_map
+                .get::<str>(&"connection_string".to_string())
+                .unwrap(),
+            couchbase_map.get::<str>(&"username".to_string()).unwrap(),
+            couchbase_map.get::<str>(&"password".to_string()).unwrap(),
+        )
+        .bucket(couchbase_map.get::<str>(&"bucket".to_string()).unwrap());
+        let arc_bucket = Arc::new(tmp_bucket);
+        App::new().data(arc_bucket.clone()).service(index)
     })
-    .bind("0.0.0.0:8080")?
+    .bind("127.0.0.1:8080")?
     .run()
     .await
 }
