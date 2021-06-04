@@ -1,6 +1,7 @@
 use actix_web::{get, web, App, Error, HttpResponse, HttpServer, Result};
 use couchbase::*;
 use java_properties::read;
+use std::env;
 use std::fs::File;
 use std::io::BufReader;
 
@@ -33,13 +34,11 @@ async fn main() -> std::io::Result<()> {
         let file = File::open(&file_name).unwrap();
         let couchbase_map = read(BufReader::new(file)).unwrap();
         let couchbase_default_collection = Cluster::connect(
-            couchbase_map
-                .get::<str>(&"connection_string".to_string())
-                .unwrap(),
-            couchbase_map.get::<str>(&"username".to_string()).unwrap(),
-            couchbase_map.get::<str>(&"password".to_string()).unwrap(),
+            env::var("COUCHBASE_STRING").unwrap(),
+            env::var("COUCHBASE_USERNAME").unwrap(),
+            env::var("COUCHBASE_PASSWORD}").unwrap(),
         )
-        .bucket(couchbase_map.get::<str>(&"bucket".to_string()).unwrap())
+        .bucket(env::var("COUCHBASE_BUCKET").unwrap())
         .default_collection();
         App::new()
             .data(PaceCouchbase {
