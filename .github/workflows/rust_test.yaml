@@ -1,0 +1,38 @@
+name: Rust - test
+
+on:
+  workflow_dispatch:
+    
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    env:
+      RUST_BACKTRACE: 1
+      DLCB_NO_PLUGINS: 1
+      LCB_NO_PLUGINS: 1  
+    runs-on: ubuntu-16.04
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: test
+    - uses: himanshumps/rust-musl-action@master
+      with:
+        args: cargo +stable build --release
+    - name: Delete tag and release
+      uses: dev-drprasad/delete-tag-and-release@v0.1.2
+      with:
+        tag_name: "0.1.0"
+        delete_release: true
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: target/release/actix_demo
+        tag_name: "0.1.0"
+        prerelease: true
+        
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
