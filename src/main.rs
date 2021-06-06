@@ -44,7 +44,7 @@ async fn main() -> std::io::Result<()> {
         let arc_bucket = Arc::new(cb_bucket);
     */    HttpServer::new(move || {
         App::new()
-            .data(data.clone())
+            .app_data(data.clone())
             .wrap(Logger::new("\" % r\" %s %b \" % { Referer }i\" \"%{User-Agent}i\" %D"))
             .service(index)
     })
