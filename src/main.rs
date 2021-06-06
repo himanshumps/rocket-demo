@@ -5,17 +5,15 @@ use actix_web::{App, get, HttpResponse, HttpServer, middleware::Logger, Result, 
 use couchbase::{Cluster, Collection, GetOptions};
 
 /*use async_std::sync::Arc;*/
-struct PaceCouchbase {
-    pace_collection: Collection,
-}
-
+/*#[derive(Debug, Clone)]
+struct PaceCouchbase (Collection);
+*/
 #[get("/getDetails/{id}")]
 async fn index(
     web::Path(id): web::Path<String>,
-    pace_couchbase: web::Data<PaceCouchbase>,
+    pace_couchbase: web::Data<Collection>,
 ) -> Result<HttpResponse, HttpResponse> {
     let results = match pace_couchbase
-        .pace_collection
         .get(id, GetOptions::default())
         .await
     {
@@ -39,16 +37,14 @@ async fn main() -> std::io::Result<()> {
         let arc_bucket = Arc::new(cb_bucket);
     */    HttpServer::new(move || {
         App::new()
-            .data(PaceCouchbase::new(
-                Cluster::connect(
-                    env::var("COUCHBASE_STRING").unwrap(),
-                    env::var("COUCHBASE_USERNAME").unwrap(),
-                    env::var("COUCHBASE_PASSWORD").unwrap(),
-                )
-                    .bucket(env::var("COUCHBASE_BUCKET").unwrap())
-                    .default_collection()
-            ))
-            .wrap(Logger::default())
+            .data(Cluster::connect(
+                env::var("COUCHBASE_STRING").unwrap(),
+                env::var("COUCHBASE_USERNAME").unwrap(),
+                env::var("COUCHBASE_PASSWORD").unwrap(),
+            )
+                .bucket(env::var("COUCHBASE_BUCKET").unwrap())
+                .default_collection())
+            .wrap(Logger::new("\" % r\" %s %b \" % { Referer }i\" \"%{User-Agent}i\" %D"))
             .service(index)
     })
         .keep_alive(KeepAlive::Os)
