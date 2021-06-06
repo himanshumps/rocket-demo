@@ -39,15 +39,15 @@ async fn main() -> std::io::Result<()> {
         let arc_bucket = Arc::new(cb_bucket);
     */    HttpServer::new(move || {
         App::new()
-            .data(PaceCouchbase {
-                pace_collection: Cluster::connect(
+            .data(PaceCouchbase::new(
+                Cluster::connect(
                     env::var("COUCHBASE_STRING").unwrap(),
                     env::var("COUCHBASE_USERNAME").unwrap(),
                     env::var("COUCHBASE_PASSWORD").unwrap(),
                 )
                     .bucket(env::var("COUCHBASE_BUCKET").unwrap())
                     .default_collection()
-            })
+            ))
             .wrap(Logger::default())
             .service(index)
     })
