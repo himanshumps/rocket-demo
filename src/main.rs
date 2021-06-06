@@ -26,6 +26,13 @@ async fn index(
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
+    let data = web::Data::new(Cluster::connect(
+        env::var("COUCHBASE_STRING").unwrap(),
+        env::var("COUCHBASE_USERNAME").unwrap(),
+        env::var("COUCHBASE_PASSWORD").unwrap(),
+    )
+        .bucket(env::var("COUCHBASE_BUCKET").unwrap())
+        .default_collection());
     /*
         let cb_cluster = Cluster::connect(
             env::var("COUCHBASE_STRING").unwrap(),
@@ -37,13 +44,7 @@ async fn main() -> std::io::Result<()> {
         let arc_bucket = Arc::new(cb_bucket);
     */    HttpServer::new(move || {
         App::new()
-            .data(Cluster::connect(
-                env::var("COUCHBASE_STRING").unwrap(),
-                env::var("COUCHBASE_USERNAME").unwrap(),
-                env::var("COUCHBASE_PASSWORD").unwrap(),
-            )
-                .bucket(env::var("COUCHBASE_BUCKET").unwrap())
-                .default_collection())
+            .data(data.clone())
             .wrap(Logger::new("\" % r\" %s %b \" % { Referer }i\" \"%{User-Agent}i\" %D"))
             .service(index)
     })
