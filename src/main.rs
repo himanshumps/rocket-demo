@@ -48,7 +48,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(Logger::new("\" % r\" %s %b \" % { Referer }i\" \"%{User-Agent}i\" %D"))
             .service(index)
     })
-        .keep_alive(KeepAlive::Os)
+        .keep_alive(KeepAlive::75s)
         .client_timeout(0)
         .backlog(1024)
         .workers(num_cpus::get() * 8)
